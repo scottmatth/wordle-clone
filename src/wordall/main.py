@@ -3,7 +3,8 @@ from rich.console import Console
 import random
 from pathlib import Path
 
-DATAFILE_PATH = Path("../data/words_5.txt")
+# DATAFILE_PATH = Path("../data/words_5.txt")
+DATAFILE_PATH = Path(__file__).parent / ".." / "data" / "words_5.txt"
 console = Console(width=40)
 qwerty_top = "QWERTYUIOP"
 qwerty_middle = "ASDFGHJKL"
