@@ -1,5 +1,3 @@
-from collections import defaultdict
-
 class GameTracker:
 
     word:str|None = None
@@ -13,21 +11,11 @@ class GameTracker:
     def remaining_guesses(self):
         return 0 if (len(self.guesses) > 0 and self.word == self.guesses[-1]) else self.max_guesses - len(self.guesses)
 
-    def make_guess(self, guess:str) -> dict[str, list]:
-        capture = defaultdict(list)
+    def make_guess(self, guess:str):
         if self.remaining_guesses < 1:
             raise UserWarning("Unable  to make any more guesses")
 
-        if guess == self.word:
-            capture = {char:["GOTIT"] for char in guess}
-        else:
-            for guess_char, real_char in zip(guess, self.word):
-                if guess not in self.word:
-                    capture[guess_char].append("NOPE")
-                elif guess_char == real_char:
-                    capture[guess_char].append("GOTIT")
         self.guesses.append(guess)
-        return capture
 
     def reset(self):
         self.word = None
@@ -37,9 +25,6 @@ class GameTracker:
         self.reset()
         self.word = word
 
-    @staticmethod
-    def result_matched(guess_result:dict[str, list]):
-        return all(a == ["GOTIT"] for a in guess_result.values())
-
-
-
+    @property
+    def used_letters(self):
+        return set([char for letters in self.guesses for char in letters ])
