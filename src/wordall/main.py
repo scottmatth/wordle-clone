@@ -1,4 +1,4 @@
-from game_tracker import GameTracker
+from game_tracker import GameTracker, InvalidEntryError
 from rich.console import Console
 import random
 from pathlib import Path
@@ -30,17 +30,11 @@ def show_results(game_stats:GameTracker):
 
 def style_letters(current_guess, game_stats, guess_display):
     if game_stats.word == current_guess:
-        guess_display = f"[bold white on green4]{current_guess}[/]"
+        guess_display = f":partying_face: [bold white on green4]{current_guess}[/] :partying_face:"
     else:
         for gletter, wletter in zip(current_guess, game_stats.word):
-            count_in_word = game_stats.word.count(gletter)
             if gletter == wletter:
-                if count_in_word > 1:
-                    guess_display += f"[bold white on gold3]{gletter}[/]"
-                    # guess_display += f"{gletter}"
-                else:
-                    guess_display += f"[bold white on green4]{gletter}[/]"
-                    # guess_display += f"{gletter}"
+                guess_display += f"[bold white on green4]{gletter}[/]"
             else:
                 if gletter in game_stats.word:
                     guess_display += f"[bold white on gold3]{gletter}[/]"
@@ -74,7 +68,7 @@ def show_keyboard(game_stats:GameTracker):
 
 def refresh_display():
     console.clear()
-    console.rule(f"[bold blue][blink]:game_die:Hello from Word-all[/blink][/bold blue]")
+    console.rule(f"[bold blue][blink] :game_die: Hello from Word-all[/blink][/bold blue]")
 
 def main():
     word_list = [word.upper() for word in DATAFILE_PATH.read_text(encoding="utf-8").strip().split('\n')]
@@ -90,10 +84,12 @@ def main():
         if game.remaining_guesses > 0:
             next_guess = console.input("Enter your next guess:-> ").upper()
 
-            game.make_guess(next_guess)
+            try:
+                game.make_guess(next_guess)
+                show_results(game)
+            except InvalidEntryError as iee:
+                console.print(iee)
 
-            # game.result_matched(guess_result)
-            show_results(game)
         else:
             restart = console.input(" New game? (Y/N) -> ").upper()
             if restart == 'Y':
