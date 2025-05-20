@@ -11,45 +11,53 @@ qwerty_bottom = "ZXCVBNM"
 
 def show_results(game_stats:GameTracker):
     refresh_display()
-    success = game_stats.word == game_stats.guesses[-1]
-    if success == False:
+    if not game_stats.is_solved:
         console.print("[center] Try again [/]")
 
     for idx in range(game_stats.max_guesses):
         guess_display = ""
         if game_stats.guesses and idx < len(game_stats.guesses):
             current_guess = game_stats.guesses[idx]
-            if game_stats.word == current_guess:
-               guess_display = f"[bold white on green]{current_guess}[/]"
-               # guess_display = f"{current_guess}"
-            else:
-                for gletter, wletter in zip(current_guess, game_stats.word):
-                    count_in_word = game_stats.word.count(gletter)
-                    if gletter == wletter:
-                        if count_in_word >1:
-                            guess_display += f"[bold white on yellow]{gletter}[/]"
-                            # guess_display += f"{gletter}"
-                        else:
-                            guess_display += f"[bold white on green]{gletter}[/]"
-                            # guess_display += f"{gletter}"
-                    else:
-                        if gletter in game_stats.word:
-                            guess_display += f"[bold white on yellow]{gletter}[/]"
-                        else:
-                            guess_display += f"[white on #666666]{gletter}[/]"
+            guess_display = style_letters(current_guess, game_stats, guess_display)
         else:
             guess_display = f"[dim]______[/]"
         console.print(guess_display, justify="center")
     show_keyboard(game_stats)
 
-    if success:
-        console.print ("[bold green]:party_popper: you got it!![/]")
+    show_results_footer(game_stats)
+
+
+def style_letters(current_guess, game_stats, guess_display):
+    if game_stats.word == current_guess:
+        guess_display = f"[bold white on green4]{current_guess}[/]"
+    else:
+        for gletter, wletter in zip(current_guess, game_stats.word):
+            count_in_word = game_stats.word.count(gletter)
+            if gletter == wletter:
+                if count_in_word > 1:
+                    guess_display += f"[bold white on gold3]{gletter}[/]"
+                    # guess_display += f"{gletter}"
+                else:
+                    guess_display += f"[bold white on green4]{gletter}[/]"
+                    # guess_display += f"{gletter}"
+            else:
+                if gletter in game_stats.word:
+                    guess_display += f"[bold white on gold3]{gletter}[/]"
+                else:
+                    guess_display += f"[white on #666666]{gletter}[/]"
+    return guess_display
+
+
+def show_results_footer(game_stats):
+    if game_stats.is_solved:
+        console.print("[bold green]:party_popper: you got it!![/]")
         # console.print (":party_popper: you got it!!")
         console.print(game_stats.word)
     else:
         if game_stats.remaining_guesses == 0:
-            console.print ("[bold]:disappointed: Sorry, time is up.[/]")
+            console.print("[bold]:disappointed: Sorry, You are out of guesses..[/]")
             console.print(game_stats.word)
+
 
 def show_keyboard(game_stats:GameTracker):
     conversion = lambda char:char if char not in game_stats.used_letters else f"[strike][bold][italics][dark_red]{char}[/][/][/][/]"
@@ -75,6 +83,7 @@ def main():
     game = GameTracker(chosen_word)
 
     done_done:bool = False
+    refresh_display()
 
     while not done_done:
         if game.remaining_guesses > 0:
@@ -85,7 +94,7 @@ def main():
             # game.result_matched(guess_result)
             show_results(game)
         else:
-            restart = console.input("You are out of guesses. New game? (Y/N) -> ").upper()
+            restart = console.input(" New game? (Y/N) -> ").upper()
             if restart == 'Y':
                 refresh_display()
                 game.new_game(random.choice(word_list))

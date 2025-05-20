@@ -9,7 +9,7 @@ class GameTracker:
 
     @property
     def remaining_guesses(self):
-        return 0 if (len(self.guesses) > 0 and self.word == self.guesses[-1]) else self.max_guesses - len(self.guesses)
+        return 0 if (len(self.guesses) > 0 and self.is_solved) else self.max_guesses - len(self.guesses)
 
     def make_guess(self, guess:str):
         if self.remaining_guesses < 1:
@@ -24,6 +24,10 @@ class GameTracker:
     def new_game(self, word):
         self.reset()
         self.word = word
+
+    @property
+    def is_solved(self):
+        return self.word == self.guesses[-1]
 
     @property
     def used_letters(self):
