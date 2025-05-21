@@ -12,37 +12,65 @@ console = Console(width=40)
 
 
 def show_results(game_stats:GameTracker):
+    """
+    Encapsulates the logic to print the historic guesses and their status,
+    the keyboard characters with indication of usage, and whether or not a
+    match happened occurred.
+    Args:
+        game_stats: Representation of the details of the current game.  Gives access
+            to the word, historical guesses, and other methods to help with game evaluation
+    """
     refresh_display()
     if not game_stats.is_solved:
         console.print("[center] Try again [/]")
 
     for idx in range(game_stats.max_guesses):
-        guess_display = ""
         if game_stats.guesses and idx < len(game_stats.guesses):
             current_guess = game_stats.guesses[idx]
-            guess_display = style_letters(current_guess, game_stats, guess_display)
+            guess_display = style_guess(current_guess, game_stats.word)
         else:
             guess_display = f"[dim]______[/]"
         console.print(guess_display, justify="center")
-    show_keyboard(game_stats)
+    show_keyboard(game_stats.char_tracker)
 
     show_results_footer(game_stats)
 
-def style_letters(current_guess, game_stats, guess_display):
-    if game_stats.word == current_guess:
-        guess_display = f":partying_face: [bold white on green4]{current_guess}[/] :partying_face:"
+
+def style_guess(current_guess, target_word:str):
+    """
+    Used for each line of the display for historical guesses.  Will apply the appropriate
+    rich styling to indicate the status of the letters in the guess
+    Args:
+        current_guess:
+            Latest guess made by the user
+        target_word:
+            The word to which all guesses in this game session attempt to match
+
+    Returns:
+        The guess with styling brackets around it to display with context to the target word
+    """
+    display=""
+    if target_word == current_guess:
+        display = f":partying_face: [bold white on green4]{current_guess}[/] :partying_face:"
     else:
-        for gletter, wletter in zip(current_guess, game_stats.word):
+        for gletter, wletter in zip(current_guess, target_word):
             if gletter == wletter:
-                guess_display += f"[bold white on green4]{gletter}[/]"
+                display += f"[bold white on green4]{gletter}[/]"
             else:
-                if gletter in game_stats.word:
-                    guess_display += f"[bold white on gold3]{gletter}[/]"
+                if gletter in target_word:
+                    display += f"[bold white on gold3]{gletter}[/]"
                 else:
-                    guess_display += f"[white on #666666]{gletter}[/]"
-    return guess_display
+                    display += f"[white on #666666]{gletter}[/]"
+    return display
+
 
 def show_results_footer(game_stats):
+    """
+    Encapsulates the logic intended to be displayed at the end of a game.  Lets the
+    player know if they solved it or they are out of any more guesses.
+    Args:
+        game_stats:  stores the data for the current game session such as the target word, guesses, etc.
+    """
     if game_stats.is_solved:
         console.print("[bold green]:party_popper: you got it!![/]")
         # console.print (":party_popper: you got it!!")
@@ -52,8 +80,20 @@ def show_results_footer(game_stats):
             console.print("[bold]:disappointed: Sorry, You are out of guesses..[/]")
             console.print(game_stats.word)
 
-def keyboard_character_format(keyboard_row:str,
-                              used_letter_map:dict[str, GuessStatus])->str:
+
+def _keyboard_character_format(keyboard_row:str,
+                               used_letter_map:dict[str, GuessStatus]) -> str:
+    """
+    Encapsulates the logic to format each row of the keyboard section with context to character used
+
+    Args:
+        keyboard_row: list of keyboard letters to which a format is intended to be applied
+        used_letter_map: Map of the letters which have been used and the context of their status relative
+            to the target word
+
+    Returns:
+        formated string containing all row members
+    """
     formatted_output = []
     for char in keyboard_row:
         formatted_char = char
@@ -68,14 +108,26 @@ def keyboard_character_format(keyboard_row:str,
         formatted_output.append(formatted_char)
     return " ".join(formatted_output)
 
-def show_keyboard(game_stats:GameTracker):
-    console.print(keyboard_character_format(QWERTY_TOP, game_stats.char_tracker), justify="center")
-    console.print(keyboard_character_format(QWERTY_MIDDLE, game_stats.char_tracker), justify="center")
-    console.print(keyboard_character_format(QWERTY_BOTTOM, game_stats.char_tracker), justify="center")
+
+def show_keyboard(used_letter_map:dict[str, GuessStatus]):
+    """
+    Encapsulates the logic to display the used/unused keyboard letters to the user
+    Args:
+        used_letter_map: map of letters used and their context to prior guesses
+
+    """
+    console.print(_keyboard_character_format(QWERTY_TOP, used_letter_map), justify="center")
+    console.print(_keyboard_character_format(QWERTY_MIDDLE, used_letter_map), justify="center")
+    console.print(_keyboard_character_format(QWERTY_BOTTOM, used_letter_map), justify="center")
+
 
 def refresh_display():
+    """
+    Restarts the display anew to show updates to the game (e.g. new results, new input prompts, etc.)
+    """
     console.clear()
     console.rule(f"[bold blue][blink] :game_die: Hello from Word-all[/blink][/bold blue]")
+
 
 def main():
     word_list = [word.upper() for word in DATAFILE_PATH.read_text(encoding="utf-8").strip().split('\n')]
@@ -92,15 +144,8 @@ def main():
             next_guess = console.input("Enter your next guess:-> ").upper()
 
             try:
-                # with DictionaryApiClient() as client:
-                #     parser = client.fetch_parser(next_guess)
-                # if parser.word:
-
-                # if next_guess in word_list:
                 game.make_guess(next_guess)
                 show_results(game)
-                # else:
-                #     console.print("That word is not an option")
             except InvalidEntryError as iee:
                 console.print(iee)
         else:

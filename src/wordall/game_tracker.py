@@ -20,10 +20,25 @@ class GameTracker:
         self.word = word
 
     @property
-    def remaining_guesses(self):
+    def remaining_guesses(self) -> int:
+        """
+        Encapsulates logic to determine if there are any remaining guesses based on eiter success or
+            previous guesses
+        Returns:
+            integer between 0 and max_guesses which corresponds to the remaining available guesses
+        """
         return 0 if (len(self.guesses) > 0 and self.is_solved) else self.max_guesses - len(self.guesses)
 
     def make_guess(self, guess:str):
+        """
+        Encapsulates the logic to update all relevant entities when a user makes a guess (i.e. adding to historical
+            list of guesses for the current section)
+        Args:
+            guess: the guess which the user has made currently
+
+        Returns:
+
+        """
         if not all(alpha in string.ascii_letters for alpha in guess):
             raise InvalidEntryError("your guess can only contain values from the english alphabet  Try again.")
         if len(guess) != 5:
@@ -51,6 +66,7 @@ class GameTracker:
         """
         self.word = None
         self.guesses.clear()
+        self.char_tracker.clear()
 
     def new_game(self, word):
         """
