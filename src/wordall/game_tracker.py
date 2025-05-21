@@ -11,13 +11,19 @@ class InvalidEntryError(ValueError):
 
 class GameTracker:
 
-    word:str|None = None
+    _word:str|None = None
     max_guesses:int = 6
-    guesses = []
-    char_tracker = defaultdict()
+    guesses:list = []
+    char_tracker:dict = defaultdict()
 
     def __init__(self, word):
-        self.word = word
+        self._word = word
+
+
+    @property
+    def word(self):
+        return self._word if self._word else ""
+
 
     @property
     def remaining_guesses(self) -> int:
@@ -28,6 +34,7 @@ class GameTracker:
             integer between 0 and max_guesses which corresponds to the remaining available guesses
         """
         return 0 if (len(self.guesses) > 0 and self.is_solved) else self.max_guesses - len(self.guesses)
+
 
     def make_guess(self, guess:str):
         """
@@ -58,15 +65,16 @@ class GameTracker:
                 self.char_tracker[char] = GuessStatus.NO_MATCH
 
 
-    def reset(self):
+    def _reset(self):
         """
         Wipes out the prior guesses and target word to be ready for a new game
         Returns:
 
         """
-        self.word = None
+        self._word = None
         self.guesses.clear()
         self.char_tracker.clear()
+
 
     def new_game(self, word):
         """
@@ -77,8 +85,9 @@ class GameTracker:
         Returns:
 
         """
-        self.reset()
-        self.word = word
+        self._reset()
+        self._word = word
+
 
     @property
     def is_solved(self):
@@ -88,6 +97,7 @@ class GameTracker:
             bool if the most recent guess matches to the target word.
         """
         return self.guesses and self.word == self.guesses[-1]
+
 
     @property
     def used_letters(self) -> dict[str, GuessStatus]:
