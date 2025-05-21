@@ -1,16 +1,15 @@
-from game_tracker import GameTracker, InvalidEntryError
+from game_tracker import GameTracker, InvalidEntryError, GuessStatus
 from rich.console import Console
 import random
 from pathlib import Path
-from freedictionaryapi.clients.sync_client import DictionaryApiClient
-from freedictionaryapi.errors import DictionaryApiNotFoundError
 
-# DATAFILE_PATH = Path("../data/words_5.txt")
 DATAFILE_PATH = Path(__file__).parent / ".." / "data" / "words_5.txt"
+QWERTY_TOP = "QWERTYUIOP"
+QWERTY_MIDDLE = "ASDFGHJKL"
+QWERTY_BOTTOM = "ZXCVBNM"
+
 console = Console(width=40)
-qwerty_top = "QWERTYUIOP"
-qwerty_middle = "ASDFGHJKL"
-qwerty_bottom = "ZXCVBNM"
+
 
 def show_results(game_stats:GameTracker):
     refresh_display()
@@ -29,7 +28,6 @@ def show_results(game_stats:GameTracker):
 
     show_results_footer(game_stats)
 
-
 def style_letters(current_guess, game_stats, guess_display):
     if game_stats.word == current_guess:
         guess_display = f":partying_face: [bold white on green4]{current_guess}[/] :partying_face:"
@@ -44,7 +42,6 @@ def style_letters(current_guess, game_stats, guess_display):
                     guess_display += f"[white on #666666]{gletter}[/]"
     return guess_display
 
-
 def show_results_footer(game_stats):
     if game_stats.is_solved:
         console.print("[bold green]:party_popper: you got it!![/]")
@@ -55,18 +52,26 @@ def show_results_footer(game_stats):
             console.print("[bold]:disappointed: Sorry, You are out of guesses..[/]")
             console.print(game_stats.word)
 
+def keyboard_character_format(keyboard_row:str,
+                              used_letter_map:dict[str, GuessStatus])->str:
+    formatted_output = []
+    for char in keyboard_row:
+        formatted_char = char
+        if char in used_letter_map.keys():
+            match used_letter_map[char]:
+                case GuessStatus.NO_MATCH:
+                    formatted_char = f"[strike][bold][italics][dark_red]{char}[/][/][/][/]"
+                case GuessStatus.WORD_MEMBER:
+                    formatted_char = f"[bold white on gold3]{char}[/]"
+                case GuessStatus.MATCH:
+                    formatted_char = f"[bold white on green4]{char}[/]"
+        formatted_output.append(formatted_char)
+    return " ".join(formatted_output)
 
 def show_keyboard(game_stats:GameTracker):
-    conversion = lambda char:char if char not in game_stats.used_letters else f"[strike][bold][italics][dark_red]{char}[/][/][/][/]"
-    top = ""
-    middle = ""
-    bottom = ""
-    top = " ".join(list(map(conversion, qwerty_top)))
-    middle = " ".join(list(map(conversion, qwerty_middle)))
-    bottom = " ".join(list(map(conversion, qwerty_bottom)))
-    console.print(top, justify="center")
-    console.print(middle, justify="center")
-    console.print(bottom, justify="center")
+    console.print(keyboard_character_format(QWERTY_TOP, game_stats.char_tracker), justify="center")
+    console.print(keyboard_character_format(QWERTY_MIDDLE, game_stats.char_tracker), justify="center")
+    console.print(keyboard_character_format(QWERTY_BOTTOM, game_stats.char_tracker), justify="center")
 
 def refresh_display():
     console.clear()
@@ -87,15 +92,17 @@ def main():
             next_guess = console.input("Enter your next guess:-> ").upper()
 
             try:
-                with DictionaryApiClient() as client:
-                    parser = client.fetch_parser(next_guess)
-                if parser.word:
-                    game.make_guess(next_guess)
-                    show_results(game)
+                # with DictionaryApiClient() as client:
+                #     parser = client.fetch_parser(next_guess)
+                # if parser.word:
+
+                # if next_guess in word_list:
+                game.make_guess(next_guess)
+                show_results(game)
+                # else:
+                #     console.print("That word is not an option")
             except InvalidEntryError as iee:
                 console.print(iee)
-            except DictionaryApiNotFoundError as danfe:
-                console.print("That is an invalid word.  Try again!")
         else:
             restart = console.input(" New game? (Y/N) -> ").upper()
             if restart == 'Y':
@@ -103,7 +110,6 @@ def main():
                 game.new_game(random.choice(word_list))
             else:
                 done_done = True
-                continue
 
 if __name__ == "__main__":
 

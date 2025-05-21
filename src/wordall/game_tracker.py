@@ -1,5 +1,10 @@
 import string
-
+from collections import defaultdict
+from enum import IntEnum
+class GuessStatus(IntEnum):
+    NO_MATCH = 1
+    WORD_MEMBER = 2
+    MATCH = 3
 
 class InvalidEntryError(ValueError):
     pass
@@ -9,6 +14,7 @@ class GameTracker:
     word:str|None = None
     max_guesses:int = 6
     guesses = []
+    char_tracker = defaultdict()
 
     def __init__(self, word):
         self.word = word
@@ -26,19 +32,52 @@ class GameTracker:
             raise UserWarning("Unable  to make any more guesses")
 
         self.guesses.append(guess)
+        for char, match in zip(guess, self.word):
+            if char == match:
+                self.char_tracker[char] = GuessStatus.MATCH
+            elif char in self.word:
+                if (char not in self.char_tracker.keys() or
+                        self.char_tracker[char] < GuessStatus.MATCH):
+                    self.char_tracker[char] = GuessStatus.WORD_MEMBER
+            else:
+                self.char_tracker[char] = GuessStatus.NO_MATCH
+
 
     def reset(self):
+        """
+        Wipes out the prior guesses and target word to be ready for a new game
+        Returns:
+
+        """
         self.word = None
         self.guesses.clear()
 
     def new_game(self, word):
+        """
+        re-initializes the current instance to accept new guesses against a new word.
+        Args:
+            word: The word that the user is trying to guess.
+
+        Returns:
+
+        """
         self.reset()
         self.word = word
 
     @property
     def is_solved(self):
+        """
+        Determines if the user guesses have successfully found the word.
+        Returns:
+            bool if the most recent guess matches to the target word.
+        """
         return self.guesses and self.word == self.guesses[-1]
 
     @property
-    def used_letters(self):
-        return set([char for letters in self.guesses for char in letters ])
+    def used_letters(self) -> dict[str, GuessStatus]:
+        """
+        Finds the unique list of letters used in all of the guesses
+        Returns:
+            set of all letters used so far
+        """
+        return self.char_tracker
