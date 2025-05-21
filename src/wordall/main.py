@@ -2,6 +2,8 @@ from game_tracker import GameTracker, InvalidEntryError
 from rich.console import Console
 import random
 from pathlib import Path
+from freedictionaryapi.clients.sync_client import DictionaryApiClient
+from freedictionaryapi.errors import DictionaryApiNotFoundError
 
 # DATAFILE_PATH = Path("../data/words_5.txt")
 DATAFILE_PATH = Path(__file__).parent / ".." / "data" / "words_5.txt"
@@ -85,11 +87,15 @@ def main():
             next_guess = console.input("Enter your next guess:-> ").upper()
 
             try:
-                game.make_guess(next_guess)
-                show_results(game)
+                with DictionaryApiClient() as client:
+                    parser = client.fetch_parser(next_guess)
+                if parser.word:
+                    game.make_guess(next_guess)
+                    show_results(game)
             except InvalidEntryError as iee:
                 console.print(iee)
-
+            except DictionaryApiNotFoundError as danfe:
+                console.print("That is an invalid word.  Try again!")
         else:
             restart = console.input(" New game? (Y/N) -> ").upper()
             if restart == 'Y':

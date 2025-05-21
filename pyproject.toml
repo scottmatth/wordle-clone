@@ -5,7 +5,13 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
+    "httpx>=0.28.1",
     "loguru>=0.7.3",
-    "pytest>=8.3.5",
+    "python-freedictionaryapi>=0.9.10",
     "rich[jupyter]>=14.0.0",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.3.5",
 ]
