@@ -1,6 +1,11 @@
 import string
 from collections import defaultdict
 from enum import IntEnum
+from typing import Any
+
+from pydantic import BaseModel
+
+
 class GuessStatus(IntEnum):
     NO_MATCH = 1
     WORD_MEMBER = 2
@@ -9,14 +14,21 @@ class GuessStatus(IntEnum):
 class InvalidEntryError(ValueError):
     pass
 
-class GameTracker:
+class GameTracker(BaseModel):
 
-    _word:str|None = None
     max_guesses:int = 6
     guesses:list = []
     char_tracker:dict = defaultdict()
 
-    def __init__(self, word):
+    def __init__(self, word, **data: Any):
+        """
+        Constructor for the Wordle clone game
+
+        Args:
+            word: Word against which the game will run against
+            **data:
+        """
+        super().__init__(**data)
         self._word = word
 
 
@@ -42,16 +54,13 @@ class GameTracker:
             list of guesses for the current section)
         Args:
             guess: the guess which the user has made currently
-
-        Returns:
-
         """
         if not all(alpha in string.ascii_letters for alpha in guess):
             raise InvalidEntryError("your guess can only contain values from the english alphabet  Try again.")
         if len(guess) != 5:
             raise InvalidEntryError("Your guess can be no more or less than 5 characters.  Try again.")
         if self.remaining_guesses < 1:
-            raise UserWarning("Unable  to make any more guesses")
+            raise UserWarning("Unable to make any more guesses")
 
         self.guesses.append(guess)
         for char, match in zip(guess, self.word):
@@ -90,13 +99,13 @@ class GameTracker:
 
 
     @property
-    def is_solved(self):
+    def is_solved(self) -> bool:
         """
         Determines if the user guesses have successfully found the word.
         Returns:
             bool if the most recent guess matches to the target word.
         """
-        return self.guesses and self.word == self.guesses[-1]
+        return not (not self.guesses or not (self.word == self.guesses[-1]))
 
 
     @property

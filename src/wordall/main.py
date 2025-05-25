@@ -1,7 +1,10 @@
-from game_tracker import GameTracker, InvalidEntryError, GuessStatus
-from rich.console import Console
 import random
+from collections import defaultdict
 from pathlib import Path
+
+from rich.console import Console
+
+from game_tracker import GameTracker, InvalidEntryError, GuessStatus  # type: ignore
 
 DATAFILE_PATH = Path(__file__).parent / ".." / "data" / "words_5.txt"
 QWERTY_TOP = "QWERTYUIOP"
@@ -53,13 +56,17 @@ def style_guess(current_guess, target_word:str):
     if target_word == current_guess:
         display = f":partying_face: [bold white on green4]{current_guess}[/] :partying_face:"
     else:
+        track:dict = defaultdict()
+        #
         for gletter, wletter in zip(current_guess, target_word):
             if gletter == wletter:
+                track[gletter] = GuessStatus.MATCH
                 display += f"[bold white on green4]{gletter}[/]"
             else:
                 if gletter in target_word:
                     display += f"[bold white on gold3]{gletter}[/]"
                 else:
+                    track[gletter] = GuessStatus.NO_MATCH
                     display += f"[white on #666666]{gletter}[/]"
     return display
 
@@ -136,7 +143,7 @@ def main():
 
     game = GameTracker(chosen_word)
 
-    done_done:bool = False
+    done_done:bool = False  # type: ignore
     refresh_display()
 
     while not done_done:
