@@ -1,9 +1,8 @@
-from pickle import FALSE
-
 import pytest
 
-from src.wordall.game_tracker import InvalidEntryError
 from src.wordall.game_tracker import GameTracker
+from src.wordall.game_tracker import InvalidEntryError
+
 
 @pytest.fixture
 def basic_game():
