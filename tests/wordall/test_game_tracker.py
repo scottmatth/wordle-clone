@@ -1,7 +1,7 @@
 import pytest
 
-from src.wordall.game_tracker import GameTracker
-from src.wordall.game_tracker import InvalidEntryError
+from game_tracker import GameTracker
+from game_tracker import InvalidEntryError
 
 
 @pytest.fixture
@@ -94,7 +94,7 @@ def test_is_solved(basic_game:GameTracker, scenarios,
 @pytest.mark.parametrize("scenarios, used_letter_list",
                          [
                              pytest.param([], [], id="No Guess."),
-                             pytest.param(["SEVER"], ['S', 'E', 'R'], id="correct guess."),
+                             pytest.param(["SEVER"], ['S', 'E', 'R', 'V'], id="correct guess."),
                              pytest.param(["AERIE"], ['A', 'R', 'E', 'I'], id="invalid guess."),
                              pytest.param(["AERIE","EVENT","SAVER", "SEVER"], ['A', 'R', 'E', 'I', 'V', 'N', 'T', 'S'], id="Correct guess after bad."),
                              pytest.param(["AERIE","EVENT","SAVER", "SLIDE", "ABIDE", "CHIDE"], ['A', 'R', 'E', 'I', 'V', 'N', 'T', 'S', 'B', 'D', 'I', 'C', 'H'], id="Full invalid guesses."),
@@ -104,5 +104,6 @@ def test_used_letters(basic_game:GameTracker,scenarios, used_letter_list):
     for guess in scenarios:
         basic_game.make_guess(guess)
 
+    assert len(basic_game.used_letters) == len(used_letter_list)
     for letter in used_letter_list:
         assert letter in basic_game.used_letters.keys()

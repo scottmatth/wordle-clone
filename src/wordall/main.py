@@ -1,5 +1,4 @@
 import random
-from collections import defaultdict
 from pathlib import Path
 
 from rich.console import Console
@@ -10,6 +9,9 @@ DATAFILE_PATH = Path(__file__).parent / ".." / "data" / "words_5.txt"
 QWERTY_TOP = "QWERTYUIOP"
 QWERTY_MIDDLE = "ASDFGHJKL"
 QWERTY_BOTTOM = "ZXCVBNM"
+UNMATCHED_BUT_FOUND_STYLE = "[bold white on gold3]"
+MACHED_STYLE = "[bold white on green4]"
+NO_MATCH_STYLE = "[white on #666666]"
 
 console = Console(width=40)
 
@@ -56,18 +58,20 @@ def style_guess(current_guess, target_word:str):
     if target_word == current_guess:
         display = f":partying_face: [bold white on green4]{current_guess}[/] :partying_face:"
     else:
-        track:dict = defaultdict()
+        track:dict = {letter:target_word.count(letter) for letter in current_guess}
         #
         for gletter, wletter in zip(current_guess, target_word):
             if gletter == wletter:
-                track[gletter] = GuessStatus.MATCH
                 display += f"[bold white on green4]{gletter}[/]"
-            else:
-                if gletter in target_word:
+            elif gletter in target_word:
+                if gletter in target_word and track[gletter] >= 1:
                     display += f"[bold white on gold3]{gletter}[/]"
                 else:
-                    track[gletter] = GuessStatus.NO_MATCH
                     display += f"[white on #666666]{gletter}[/]"
+            else:
+                display += f"[white on #666666]{gletter}[/]"
+            if track[gletter] > 0:
+                track[gletter] -= 1
     return display
 
 
