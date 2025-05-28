@@ -49,25 +49,35 @@ def style_guess(current_guess, target_word:str):
     """
     display=""
     if target_word == current_guess:
-        display = f":partying_face: [bold white on green4]{current_guess}[/] :partying_face:"
+        display = f":partying_face: {MACHED_STYLE}{current_guess}[/] :partying_face:"
     else:
-        track:dict = {letter:target_word.count(letter) for letter in current_guess}
-        for gletter, wletter in zip(current_guess, target_word):
-            if gletter == wletter and track[gletter] > 1:
-                track[gletter] -= 1
+        # Assist in letter match hints by counting how many times each letter appears in the target word
+        track_highlights:dict = {letter:target_word.count(letter) for letter in current_guess}
 
         for gletter, wletter in zip(current_guess, target_word):
+            # Deduct the count by each matched letter so that it truly just matches highlights
+            if gletter == wletter and track_highlights[gletter] > 1:
+                track_highlights[gletter] -= 1
+
+        # Compare the guess to the chosen word letter by letter and apply styling
+        for gletter, wletter in zip(current_guess, target_word):
             if gletter == wletter:
-                display += f"[bold white on green4]{gletter}[/]"
+                # Display green highlight if letters match
+                display += f"{MACHED_STYLE}{gletter}[/]"
             elif gletter in target_word:
-                if gletter in target_word and track[gletter] >= 1:
-                    display += f"[bold white on gold3]{gletter}[/]"
+                if gletter in target_word and track_highlights[gletter] >= 1:
+                    # Display yellow highlight if doesn't match ANd the letter exists AND we have enough
+                    # unmatched representations left
+                    display += f"{UNMATCHED_BUT_FOUND_STYLE}{gletter}[/]"
                 else:
-                    display += f"[white on #666666]{gletter}[/]"
+                    # If no other highlights left, show that it does not match
+                    display += f"{NO_MATCH_STYLE}{gletter}[/]"
             else:
-                display += f"[white on #666666]{gletter}[/]"
-            if track[gletter] > 0:
-                track[gletter] -= 1
+                # All other mathces fail, Show that it does not match
+                display += f"{NO_MATCH_STYLE}{gletter}[/]"
+            if track_highlights[gletter] > 0:
+                # Decrement the number of tracked Highlights to mark off when they should not be used anymore
+                track_highlights[gletter] -= 1
     return display
 
 
@@ -81,7 +91,6 @@ def show_results_footer(game_stats, console_in):
     """
     if game_stats.is_solved:
         console_in.print("[bold green]:party_popper: you got it!![/]")
-        # console.print (":party_popper: you got it!!")
         console_in.print(game_stats.word)
     else:
         if game_stats.remaining_guesses == 0:
@@ -108,11 +117,17 @@ def keyboard_character_format(keyboard_row:str,
         if char in used_letter_map.keys():
             match used_letter_map[char]:
                 case GuessStatus.NO_MATCH:
+                    # Show the keyboard letter as red and struck if the letter was
+                    # used and does not appear in the word
                     formatted_char = f"[strike][bold][italics][dark_red]{char}[/][/][/][/]"
                 case GuessStatus.WORD_MEMBER:
-                    formatted_char = f"[bold white on gold3]{char}[/]"
+                    # Show the keyboard letter with yellow highlight if word was used,
+                    # is in the word, but has not matched
+                    formatted_char = f"{UNMATCHED_BUT_FOUND_STYLE}{char}[/]"
                 case GuessStatus.MATCH:
-                    formatted_char = f"[bold white on green4]{char}[/]"
+                    # Show the keyboard letter with Green highlight if word was used and is a match
+                    formatted_char = f"{MACHED_STYLE}{char}[/]"
+        # Add the styled letter to the total list of letters
         formatted_output.append(formatted_char)
     return " ".join(formatted_output)
 

@@ -26,5 +26,6 @@ pythonpath = [
     "tests"  # Add the directory where your tests reside
 ]
 testpaths = ["tests"]
+addopts = "--cov"
 [tool.mypy]
 mypy_path = "src"
