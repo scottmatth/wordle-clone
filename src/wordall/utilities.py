@@ -1,11 +1,5 @@
-import random
-from pathlib import Path
+from .game_tracker import GameTracker, GuessStatus #type: ignore
 
-from rich.console import Console
-
-from .game_tracker import GameTracker, InvalidEntryError, GuessStatus  # type: ignore
-
-DATAFILE_PATH = Path(__file__).parent / ".." / "data" / "words_5.txt"
 QWERTY_TOP = "QWERTYUIOP"
 QWERTY_MIDDLE = "ASDFGHJKL"
 QWERTY_BOTTOM = "ZXCVBNM"
@@ -13,21 +7,20 @@ UNMATCHED_BUT_FOUND_STYLE = "[bold white on gold3]"
 MACHED_STYLE = "[bold white on green4]"
 NO_MATCH_STYLE = "[white on #666666]"
 
-console = Console(width=40)
 
-
-def show_results(game_stats:GameTracker):
+def show_results(game_stats:GameTracker, console_in):
     """
     Encapsulates the logic to print the historic guesses and their status,
     the keyboard characters with indication of usage, and whether or not a
     match happened occurred.
     Args:
+        console_in:  Reference to the Rich Console with which the display shall be printed
         game_stats: Representation of the details of the current game.  Gives access
             to the word, historical guesses, and other methods to help with game evaluation
     """
-    refresh_display()
+    refresh_display(console_in)
     if not game_stats.is_solved:
-        console.print("[center] Try again [/]")
+        console_in.print("[center] Try again [/]")
 
     for idx in range(game_stats.max_guesses):
         if game_stats.guesses and idx < len(game_stats.guesses):
@@ -35,10 +28,10 @@ def show_results(game_stats:GameTracker):
             guess_display = style_guess(current_guess, game_stats.word)
         else:
             guess_display = f"[dim]______[/]"
-        console.print(guess_display, justify="center")
-    show_keyboard(game_stats.char_tracker)
+        console_in.print(guess_display, justify="center")
+    show_keyboard(game_stats.char_tracker, console_in)
 
-    show_results_footer(game_stats)
+    show_results_footer(game_stats, console_in)
 
 
 def style_guess(current_guess, target_word:str):
@@ -75,25 +68,26 @@ def style_guess(current_guess, target_word:str):
     return display
 
 
-def show_results_footer(game_stats):
+def show_results_footer(game_stats, console_in):
     """
     Encapsulates the logic intended to be displayed at the end of a game.  Lets the
     player know if they solved it or they are out of any more guesses.
     Args:
+        console_in: Reference to the Rich Console with which the display shall be printed
         game_stats:  stores the data for the current game session such as the target word, guesses, etc.
     """
     if game_stats.is_solved:
-        console.print("[bold green]:party_popper: you got it!![/]")
+        console_in.print("[bold green]:party_popper: you got it!![/]")
         # console.print (":party_popper: you got it!!")
-        console.print(game_stats.word)
+        console_in.print(game_stats.word)
     else:
         if game_stats.remaining_guesses == 0:
-            console.print("[bold]:disappointed: Sorry, You are out of guesses..[/]")
-            console.print(game_stats.word)
+            console_in.print("[bold]:disappointed: Sorry, You are out of guesses..[/]")
+            console_in.print(game_stats.word)
 
 
-def _keyboard_character_format(keyboard_row:str,
-                               used_letter_map:dict[str, GuessStatus]) -> str:
+def keyboard_character_format(keyboard_row:str,
+                              used_letter_map:dict[str, GuessStatus]) -> str:
     """
     Encapsulates the logic to format each row of the keyboard section with context to character used
 
@@ -120,53 +114,22 @@ def _keyboard_character_format(keyboard_row:str,
     return " ".join(formatted_output)
 
 
-def show_keyboard(used_letter_map:dict[str, GuessStatus]):
+def show_keyboard(used_letter_map:dict[str, GuessStatus], console_in):
     """
     Encapsulates the logic to display the used/unused keyboard letters to the user
     Args:
+        console_in:  Reference to the Rich Console with which the display shall be printed
         used_letter_map: map of letters used and their context to prior guesses
 
     """
-    console.print(_keyboard_character_format(QWERTY_TOP, used_letter_map), justify="center")
-    console.print(_keyboard_character_format(QWERTY_MIDDLE, used_letter_map), justify="center")
-    console.print(_keyboard_character_format(QWERTY_BOTTOM, used_letter_map), justify="center")
+    console_in.print(keyboard_character_format(QWERTY_TOP, used_letter_map), justify="center")
+    console_in.print(keyboard_character_format(QWERTY_MIDDLE, used_letter_map), justify="center")
+    console_in.print(keyboard_character_format(QWERTY_BOTTOM, used_letter_map), justify="center")
 
 
-def refresh_display():
+def refresh_display(console_in):
     """
     Restarts the display anew to show updates to the game (e.g. new results, new input prompts, etc.)
     """
-    console.clear()
-    console.rule(f"[bold blue][blink] :game_die: Hello from Word-all[/blink][/bold blue]")
-
-
-def main():
-    word_list = [word.upper() for word in DATAFILE_PATH.read_text(encoding="utf-8").strip().split('\n')]
-
-    chosen_word = random.choice(word_list)
-
-    game = GameTracker(chosen_word)
-
-    done_done:bool = False  # type: ignore
-    refresh_display()
-
-    while not done_done:
-        if game.remaining_guesses > 0:
-            next_guess = console.input("Enter your next guess:-> ").upper()
-
-            try:
-                game.make_guess(next_guess)
-                show_results(game)
-            except InvalidEntryError as iee:
-                console.print(iee)
-        else:
-            restart = console.input(" New game? (Y/N) -> ").upper()
-            if restart == 'Y':
-                refresh_display()
-                game.new_game(random.choice(word_list))
-            else:
-                done_done = True
-
-if __name__ == "__main__":
-
-    main()
+    console_in.clear()
+    console_in.rule(f"[bold blue][blink] :game_die: Hello from Word-all[/blink][/bold blue]")
