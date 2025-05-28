@@ -30,7 +30,27 @@ def test_show_results():
                                                 f"{NO_MATCH_STYLE}S[/]"),
                              ("CHIMP", "IDIOM", f"{UNMATCHED_BUT_FOUND_STYLE}I[/]{NO_MATCH_STYLE}D[/]{MACHED_STYLE}I[/]"
                                                 f"{NO_MATCH_STYLE}O[/]{UNMATCHED_BUT_FOUND_STYLE}M[/]"),
-                             pytest.param("IMPRESSED", "STRESSED", "", marks=pytest.mark.skip)
+                             ("IMPRESSED", "STRESSEDA", f"{UNMATCHED_BUT_FOUND_STYLE}S[/]{NO_MATCH_STYLE}T[/]"
+                                                        f"{UNMATCHED_BUT_FOUND_STYLE}R[/]"
+                                                        f"{UNMATCHED_BUT_FOUND_STYLE}E[/]"
+                                                        f"{NO_MATCH_STYLE}S[/]{MACHED_STYLE}S[/]"
+                                                        f"{UNMATCHED_BUT_FOUND_STYLE}E[/]"
+                                                        f"{UNMATCHED_BUT_FOUND_STYLE}D[/]"
+                                                        f"{NO_MATCH_STYLE}A[/]"),
+                             ("IMPRSSEDE", "STRESSEDA", f"{UNMATCHED_BUT_FOUND_STYLE}S[/]{NO_MATCH_STYLE}T[/]"
+                                                        f"{UNMATCHED_BUT_FOUND_STYLE}R[/]"
+                                                        f"{UNMATCHED_BUT_FOUND_STYLE}E[/]"
+                                                        f"{MACHED_STYLE}S[/]{MACHED_STYLE}S[/]"
+                                                        f"{MACHED_STYLE}E[/]"
+                                                        f"{MACHED_STYLE}D[/]"
+                                                        f"{NO_MATCH_STYLE}A[/]"),
+                             ( "STRESSEDA", "IMPRSSEDE", f"{NO_MATCH_STYLE}I[/]{NO_MATCH_STYLE}M[/]"
+                                                        f"{NO_MATCH_STYLE}P[/]"
+                                                        f"{UNMATCHED_BUT_FOUND_STYLE}R[/]"
+                                                        f"{MACHED_STYLE}S[/]{MACHED_STYLE}S[/]"
+                                                        f"{MACHED_STYLE}E[/]"
+                                                        f"{MACHED_STYLE}D[/]"
+                                                        f"{NO_MATCH_STYLE}E[/]"),
                          ])
 def test_style_guess(word, guess, styled_output):
     assert styled_output == style_guess(guess, word)

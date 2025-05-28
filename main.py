@@ -17,10 +17,10 @@ def main():
 
     game = GameTracker(chosen_word)
 
-    done_done:bool = False  # type: ignore
+    finished:bool = False  # type: ignore
     refresh_display(console)
 
-    while not done_done:
+    while not finished:
         if game.remaining_guesses > 0:
             next_guess = console.input("Enter your next guess:-> ").upper()
 
@@ -35,7 +35,7 @@ def main():
                 refresh_display(console)
                 game.new_game(random.choice(word_list))
             else:
-                done_done = True
+                finished = True
 
 if __name__ == "__main__":
 

@@ -52,7 +52,10 @@ def style_guess(current_guess, target_word:str):
         display = f":partying_face: [bold white on green4]{current_guess}[/] :partying_face:"
     else:
         track:dict = {letter:target_word.count(letter) for letter in current_guess}
-        #
+        for gletter, wletter in zip(current_guess, target_word):
+            if gletter == wletter and track[gletter] > 1:
+                track[gletter] -= 1
+
         for gletter, wletter in zip(current_guess, target_word):
             if gletter == wletter:
                 display += f"[bold white on green4]{gletter}[/]"
