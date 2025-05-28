@@ -1,7 +1,6 @@
 import pytest
 
-from game_tracker import GameTracker
-from game_tracker import InvalidEntryError
+from src.wordall.game_tracker import GameTracker, InvalidEntryError #type: ignore
 
 
 @pytest.fixture

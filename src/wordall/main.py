@@ -3,7 +3,7 @@ from pathlib import Path
 
 from rich.console import Console
 
-from game_tracker import GameTracker, InvalidEntryError, GuessStatus  # type: ignore
+from .game_tracker import GameTracker, InvalidEntryError, GuessStatus  # type: ignore
 
 DATAFILE_PATH = Path(__file__).parent / ".." / "data" / "words_5.txt"
 QWERTY_TOP = "QWERTYUIOP"

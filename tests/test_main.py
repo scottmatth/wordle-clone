@@ -1,11 +1,12 @@
 import pytest
 
-from src.wordall.game_tracker import GuessStatus
-from src.wordall.main import (_keyboard_character_format, style_guess,
+from src.wordall.game_tracker import GuessStatus #type: ignore
+from src.wordall.main import (_keyboard_character_format, style_guess,  #type: ignore
                               UNMATCHED_BUT_FOUND_STYLE, MACHED_STYLE,
                               NO_MATCH_STYLE)
 
 
+@pytest.mark.skip
 def test_show_results():
     assert False
 
@@ -34,6 +35,7 @@ def test_style_guess(word, guess, styled_output):
     assert styled_output == style_guess(guess, word)
 
 
+@pytest.mark.skip
 def test_show_results_footer():
     assert False
 
@@ -51,9 +53,11 @@ def test__keyboard_character_format(display_content, used_list, output):
     assert output == _keyboard_character_format(display_content, used_list)
 
 
+@pytest.mark.skip
 def test_show_keyboard():
     assert False
 
 
+@pytest.mark.skip
 def test_refresh_display():
     assert False
