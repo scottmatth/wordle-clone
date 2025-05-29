@@ -27,7 +27,7 @@ def show_results(game_stats:GameTracker, console_in):
             current_guess = game_stats.guesses[idx]
             guess_display = style_guess(current_guess, game_stats.word)
         else:
-            guess_display = f"[dim]______[/]"
+            guess_display = f"[dim]{'_'*game_stats.word_size}[/]"
         console_in.print(guess_display, justify="center")
     show_keyboard(game_stats.char_tracker, console_in)
 

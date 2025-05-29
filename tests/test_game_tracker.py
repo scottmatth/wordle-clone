@@ -8,32 +8,59 @@ def basic_game():
     return GameTracker("SEVER")
 
 
+@pytest.mark.parametrize("word,size",
+                         [
+                             ("SEVER", None),
+                             ("SEVER", 5),
+                             ("CHERUB", None),
+                             ("CHERUB", 6),
+                         ])
+def test_construct_tracker(word,size):
+    if size:
+        game = GameTracker(word, size)
+    else:
+        game = GameTracker(word)
+
+    assert game.word == word
+    assert game.word_size == size if size else 5
+
+
 def test_word(basic_game:GameTracker):
     assert basic_game.word == "SEVER"
     assert basic_game.word != "sever"
 
 
-@pytest.mark.parametrize("guesses, assertion",
+@pytest.mark.parametrize("word, size, guesses, assertion",
                          [
-                             ([], 6),
-                             (["EVENT"], 5),
-                             (["EVENT","SAVER"], 4),
-                             (["EVENT","SAVER", "SEVER"], 0),
+                             ("SEVER", 5, [], 6),
+                             ("SEVER", 5, ["EVENT"], 5),
+                             ("SEVER", 5, ["EVENT","SAVER"], 4),
+                             ("SEVER", 5, ["EVENT","SAVER", "SEVER"], 0),
+                             ("CHERUB", 6, [], 6),
+                             ("CHERUB", 6, ["CHASED"], 5),
+                             ("CHERUB", 6, ["CHASED", "CHOSEN"], 4),
+                             ("CHERUB", 6, ["CHASED", "CHOSEN", "CHERUB"], 0),
+                             ("CHERUB", 6, ["CHERUB"], 0),
                          ])
-def test_remaining_guesses(basic_game:GameTracker, guesses:list,
+def test_remaining_guesses(word, size, guesses:list,
                            assertion:int):
+    basic_game = GameTracker(word, size)
     for guess in guesses:
         basic_game.make_guess(guess)
     assert basic_game.remaining_guesses == assertion
 
 
-@pytest.mark.parametrize("scenario, error",
+@pytest.mark.parametrize("word, size, scenario, error",
                          [
-                             pytest.param("STAKES", "Your guess can be no more or less than 5 characters.  Try again.", id="Guess too long"),
-                             pytest.param("SO", "Your guess can be no more or less than 5 characters.  Try again.", id="Guess too short"),
-                             pytest.param("SO_SO", "your guess can only contain values from the english alphabet  Try again.", id="Guess too has invalid characters"),
+                             pytest.param("SEVER", 5,"STAKES", "Your guess can be no more or less than 5 characters.  Try again.", id="Guess too long"),
+                             pytest.param("SEVER", 5,"SO", "Your guess can be no more or less than 5 characters.  Try again.", id="Guess too short"),
+                             pytest.param("SEVER", 5,"SO_SO", "your guess can only contain values from the english alphabet  Try again.", id="Guess too has invalid characters"),
+                             pytest.param("CHERUB", 6,"STINKES", "Your guess can be no more or less than 6 characters.  Try again.", id="Guess too long 6 characters"),
+                             pytest.param("CHERUB", 6,"SO", "Your guess can be no more or less than 6 characters.  Try again.", id="Guess too short 6 characters"),
+                             pytest.param("CHERUB", 6,"SO__SO", "your guess can only contain values from the english alphabet  Try again.", id="Guess too has invalid characters 6 characters"),
                          ])
-def test_make_failing_guess(basic_game:GameTracker, scenario, error):
+def test_make_failing_guess(word, size, scenario, error):
+    basic_game = GameTracker(word, size)
     try:
         basic_game.make_guess(scenario)
         assert False
@@ -41,10 +68,10 @@ def test_make_failing_guess(basic_game:GameTracker, scenario, error):
         assert str(test_e) == error
 
     # Now make the correct guess to halt guesses
-    basic_game.make_guess("SEVER")
+    basic_game.make_guess(word)
     # Now try to make ONE MORE guess
     try:
-        basic_game.make_guess("AERIE")
+        basic_game.make_guess("AERIE"+("" if size == 5 else "S"))
         assert False
     except UserWarning as uw:
         assert str(uw) == "Unable to make any more guesses"
