@@ -15,7 +15,7 @@ python3 pip install uv
 ```
 * Download the source to your local environment
 ```commandline
-git clone git@github.com:scottmatth/wordle-clone.git
+git clone https://github.com/scottmatth/wordle-clone.git
 ```
 * Navigate to the top level of the cloned repository
 * Create and begin a virtual enviornment
