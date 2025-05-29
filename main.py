@@ -4,7 +4,7 @@ from pathlib import Path
 from rich.console import Console
 from rich.prompt import Prompt
 
-from src.wordall.game_tracker import GameTracker, InvalidEntryError, GuessStatus  # type: ignore
+from src.wordall.game_tracker import GameTracker, InvalidEntryError  # type: ignore
 from src.wordall.utilities import show_results, refresh_display  # type: ignore
 
 FIVE_WORD_DATAFILE_PATH = Path(__file__).parent / "src" / "data" / "words_5.txt"

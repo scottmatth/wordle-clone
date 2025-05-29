@@ -111,7 +111,7 @@ def test_new_game(basic_game:GameTracker):
                          ])
 def test_is_solved(basic_game:GameTracker, scenarios,
                    guesses_left, is_it_solved):
-    assert basic_game.is_solved == False
+    assert not basic_game.is_solved
     for guess in scenarios:
         basic_game.make_guess(guess)
     assert basic_game.remaining_guesses == guesses_left

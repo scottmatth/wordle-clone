@@ -150,4 +150,4 @@ def refresh_display(console_in):
     Restarts the display anew to show updates to the game (e.g. new results, new input prompts, etc.)
     """
     console_in.clear()
-    console_in.rule(f"[bold blue][blink] :game_die: Hello from Word-all[/blink][/bold blue]")
+    console_in.rule("[bold blue][blink] :game_die: Hello from Word-all[/blink][/bold blue]")
