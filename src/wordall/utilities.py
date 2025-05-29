@@ -4,7 +4,7 @@ QWERTY_TOP = "QWERTYUIOP"
 QWERTY_MIDDLE = "ASDFGHJKL"
 QWERTY_BOTTOM = "ZXCVBNM"
 UNMATCHED_BUT_FOUND_STYLE = "[bold white on gold3]"
-MACHED_STYLE = "[bold white on green4]"
+MATCHED_STYLE = "[bold white on green4]"
 NO_MATCH_STYLE = "[white on #666666]"
 
 
@@ -49,21 +49,21 @@ def style_guess(current_guess, target_word:str):
     """
     display=""
     if target_word == current_guess:
-        display = f":partying_face: {MACHED_STYLE}{current_guess}[/] :partying_face:"
+        display = f":partying_face: {MATCHED_STYLE}{current_guess}[/] :partying_face:"
     else:
         # Assist in letter match hints by counting how many times each letter appears in the target word
         track_highlights:dict = {letter:target_word.count(letter) for letter in current_guess}
 
         for gletter, wletter in zip(current_guess, target_word):
             # Deduct the count by each matched letter so that it truly just matches highlights
-            if gletter == wletter and track_highlights[gletter] > 1:
+            if gletter == wletter:
                 track_highlights[gletter] -= 1
 
         # Compare the guess to the chosen word letter by letter and apply styling
         for gletter, wletter in zip(current_guess, target_word):
             if gletter == wletter:
                 # Display green highlight if letters match
-                display += f"{MACHED_STYLE}{gletter}[/]"
+                display += f"{MATCHED_STYLE}{gletter}[/]"
             elif gletter in target_word:
                 if gletter in target_word and track_highlights[gletter] >= 1:
                     # Display yellow highlight if doesn't match ANd the letter exists AND we have enough
@@ -126,7 +126,7 @@ def keyboard_character_format(keyboard_row:str,
                     formatted_char = f"{UNMATCHED_BUT_FOUND_STYLE}{char}[/]"
                 case GuessStatus.MATCH:
                     # Show the keyboard letter with Green highlight if word was used and is a match
-                    formatted_char = f"{MACHED_STYLE}{char}[/]"
+                    formatted_char = f"{MATCHED_STYLE}{char}[/]"
         # Add the styled letter to the total list of letters
         formatted_output.append(formatted_char)
     return " ".join(formatted_output)
