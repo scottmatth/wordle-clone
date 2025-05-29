@@ -1,0 +1,30 @@
+[project]
+name = "wordall"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "httpx>=0.28.1",
+    "loguru>=0.7.3",
+    "pydantic>=2.11.5",
+    "python-freedictionaryapi>=0.9.10",
+    "rich[jupyter]>=14.0.0",
+]
+
+[dependency-groups]
+dev = [
+    "mypy>=1.15.0",
+    "pytest>=8.3.5",
+    "pytest-cov>=6.1.1",
+]
+
+[tool.pytest.ini_options]
+pythonpath = [
+    ".",
+    "src",  # Add the directory where your source code resides
+    "tests"  # Add the directory where your tests reside
+]
+testpaths = ["tests"]
+[tool.mypy]
+mypy_path = "src"
