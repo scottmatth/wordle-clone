@@ -149,9 +149,10 @@ def test_new_game(game_fixture: GameTracker):  # pylint: disable=C0116
     assert game_fixture.remaining_guesses < 6
     assert game_fixture.guesses
 
-    game_fixture.new_game("SAVER")
-    assert game_fixture.word == "SAVER"
+    game_fixture.new_game("SAVERS", 6)
+    assert game_fixture.word == "SAVERS"
     assert game_fixture.remaining_guesses == 6
+    assert game_fixture.word_size == 6
     assert not game_fixture.guesses
 
 

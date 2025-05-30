@@ -36,4 +36,5 @@ jobs:
         uv run black $(git ls-files '*.py')
     - name: run unit tests
       run: |
-        uv run pytest -v --cov
+        coverage run -m pytest -v --cov
+        coverage report -m

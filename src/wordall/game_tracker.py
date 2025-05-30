@@ -126,6 +126,7 @@ class GameTracker(BaseModel):
         """
         re-initializes the current instance to accept new guesses against a new word.
         Args:
+            word_length:
             word: The word that the user is trying to guess.
 
         Returns:
