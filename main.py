@@ -1,3 +1,8 @@
+"""
+Primary point of entry for the wordall module.  Houses the interface which a user interacts with
+in order to play the game
+"""
+
 import random
 from pathlib import Path
 
@@ -12,20 +17,33 @@ SIX_WORD_DATAFILE_PATH = Path(__file__).parent / "src" / "data" / "words_6.txt"
 
 console = Console(width=40)
 
+
 def main():
+    """
+    Encapsulates the logic to display and capture the game "interface".
+    Returns:
+
+    """
 
     refresh_display(console)
 
-    word_size = Prompt.ask("5 word or 6 word game (Click Enter for the default)? -> ", default=5)
+    word_size = Prompt.ask(
+        "5 word or 6 word game (Click Enter for the default)? -> ", default=5
+    )
 
-    word_source = FIVE_WORD_DATAFILE_PATH if int(word_size) == 5 else SIX_WORD_DATAFILE_PATH
-    word_list = [word.upper() for word in word_source.read_text(encoding="utf-8").strip().split('\n')]
+    word_source = (
+        FIVE_WORD_DATAFILE_PATH if int(word_size) == 5 else SIX_WORD_DATAFILE_PATH
+    )
+    word_list = [
+        word.upper()
+        for word in word_source.read_text(encoding="utf-8").strip().split("\n")
+    ]
 
     chosen_word = random.choice(word_list)
 
     game = GameTracker(chosen_word, int(word_size))
 
-    finished:bool = False  # type: ignore
+    finished: bool = False  # type: ignore
 
     while not finished:
         if game.remaining_guesses > 0:
@@ -38,12 +56,12 @@ def main():
                 console.print(iee)
         else:
             restart = console.input(" New game? (Y/N) -> ").upper()
-            if restart == 'Y':
+            if restart == "Y":
                 refresh_display(console)
                 game.new_game(random.choice(word_list))
             else:
                 finished = True
 
-if __name__ == "__main__":
 
+if __name__ == "__main__":
     main()

@@ -17,14 +17,23 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        python -m pip install pylint
         python -m pip install uv
-        # python -m pip install ruff
         uv build
     - name: Analysing the code with pylint
       run: |
         pylint $(git ls-files '*.py')
+    - name: Analysing code with ruff
+      run: |
         uv run ruff check
+    - name: Analysing the code with flake
+      run: |
+        uv run flake8 $(git ls-files '*.py')
+    - name: Analysing the code with mypy
+      run: |
+        uv run mypy $(git ls-files '*.py')
+    - name: Analysing the code with black
+      run: |
+        uv run black $(git ls-files '*.py')
     - name: run unit tests
       run: |
         uv run pytest -v --cov

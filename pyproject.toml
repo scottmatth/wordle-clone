@@ -10,22 +10,24 @@ dependencies = [
     "pydantic>=2.11.5",
     "python-freedictionaryapi>=0.9.10",
     "rich[jupyter]>=14.0.0",
-    "ruff>=0.11.12",
 ]
 
 [dependency-groups]
 dev = [
+    "black>=25.1.0",
+    "flake8>=7.2.0",
     "mypy>=1.15.0",
+    "pylint>=3.3.7",
     "pytest>=8.3.5",
     "pytest-cov>=6.1.1",
+    "ruff>=0.11.12",
 ]
 
 [tool.pytest.ini_options]
 pythonpath = [
-    ".",
     "src",  # Add the directory where your source code resides
     "tests"  # Add the directory where your tests reside
 ]
 testpaths = ["tests"]
 [tool.mypy]
-mypy_path = "src"
+mypy_path = ["src", "tests"]
