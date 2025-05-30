@@ -56,8 +56,8 @@ def test_word(game_fixture):  # pylint: disable=C0116
         ("CHERUB", 6, ["CHERUB"], 0),
     ],
 )
-def test_remaining_guesses(
-    word, size, guesses: list, assertion: int  # pylint: disable=C0116
+def test_remaining_guesses(  # pylint: disable=C0116
+    word, size, guesses: list, assertion: int
 ):
     game_scope = GameTracker(word, size)
     for guess in guesses:
@@ -72,36 +72,35 @@ def test_remaining_guesses(
             "SEVER",
             5,
             "STAKES",
-            "Your guess can be no more or less than 5 characters. " "Try again.",
+            "Your guess can be no more or less than 5 characters. Try again.",
             id="Guess too long",
         ),
         pytest.param(
             "SEVER",
             5,
             "SO",
-            "Your guess can be no more or less than 5 characters. " "Try again.",
+            "Your guess can be no more or less than 5 characters. Try again.",
             id="Guess too short",
         ),
         pytest.param(
             "SEVER",
             5,
             "SO_SO",
-            "your guess can only contain values from the english "
-            "alphabet. Try again.",
+            "your guess can only contain values from the english alphabet. Try again.",
             id="Guess too has invalid characters",
         ),
         pytest.param(
             "CHERUB",
             6,
             "STINKES",
-            "Your guess can be no more or less than 6 characters. " "Try again.",
+            "Your guess can be no more or less than 6 characters. Try again.",
             id="Guess too long 6 characters",
         ),
         pytest.param(
             "CHERUB",
             6,
             "SO",
-            "Your guess can be no more or less than 6 characters. " "Try again.",
+            "Your guess can be no more or less than 6 characters. Try again.",
             id="Guess too short 6 characters",
         ),
         pytest.param(
@@ -176,9 +175,9 @@ def test_new_game(game_fixture: GameTracker):  # pylint: disable=C0116
         ),
     ],
 )
-def test_is_solved(
+def test_is_solved(  # pylint: disable=C0116
     game_fixture: GameTracker,
-    scenarios,  # pylint: disable=C0116
+    scenarios,
     guesses_left,
     is_it_solved,
 ):
@@ -207,8 +206,8 @@ def test_is_solved(
         ),
     ],
 )
-def test_used_letters(
-    game_fixture: GameTracker, scenarios, used_letter_list  # pylint: disable=C0116
+def test_used_letters(  # pylint: disable=C0116
+    game_fixture: GameTracker, scenarios, used_letter_list
 ):
     assert not game_fixture.used_letters.keys()
     for guess in scenarios:
