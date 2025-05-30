@@ -21,7 +21,7 @@ jobs:
         uv build
     - name: Analysing the code with pylint
       run: |
-        pylint $(git ls-files '*.py')
+        uv run pylint $(git ls-files '*.py')
     - name: Analysing code with ruff
       run: |
         uv run ruff check
