@@ -19,6 +19,7 @@ jobs:
         python -m pip install --upgrade pip
         python -m pip install uv
         python -m pip install coverage
+        python -m pip install pytest
         uv build
     - name: Analysing the code with pylint
       run: |
