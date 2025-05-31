@@ -19,8 +19,9 @@ class GameTracker(BaseModel):
     max_guesses:int = 6
     guesses:list = []
     char_tracker:dict = defaultdict()
+    word_list:list = []
 
-    def __init__(self, word, word_length=5, **data: Any):
+    def __init__(self, word, word_length=5, word_list=None, **data: Any):
         """
         Constructor for the Wordle clone game
 
@@ -29,8 +30,11 @@ class GameTracker(BaseModel):
             **data:
         """
         super().__init__(**data)
+        if word_list is None:
+            word_list = []
         self._word = word
         self._word_length = word_length
+        self.word_list = word_list or []
 
 
     @property
@@ -66,6 +70,8 @@ class GameTracker(BaseModel):
             raise InvalidEntryError(f"Your guess can be no more or less than {self.word_size} characters.  Try again.")
         if self.remaining_guesses < 1:
             raise UserWarning("Unable to make any more guesses")
+        if guess.upper() not in self.word_list:
+            raise InvalidEntryError(f"Your guess '{guess}' is not a valid word.  Please try again.")
 
         self.guesses.append(guess)
         for char, match in zip(guess, self.word):

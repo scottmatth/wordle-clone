@@ -23,7 +23,7 @@ def main():
 
     chosen_word = random.choice(word_list)
 
-    game = GameTracker(chosen_word, int(word_size))
+    game = GameTracker(chosen_word, int(word_size), word_list=word_list)
 
     finished:bool = False  # type: ignore
 
