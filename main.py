@@ -23,7 +23,7 @@ def main():
 
     chosen_word = random.choice(word_list)
 
-    game = GameTracker(chosen_word, int(word_size), word_list=word_list)
+    game = GameTracker(chosen_word, int(word_size))
 
     finished:bool = False  # type: ignore
 
@@ -32,6 +32,9 @@ def main():
             next_guess = console.input("Enter your next guess:-> ").upper()
 
             try:
+                if next_guess.upper() not in word_list:
+                    raise InvalidEntryError(f"Your guess '{next_guess}' is not a valid word.  Please try again.")
+
                 game.make_guess(next_guess)
                 show_results(game, console)
             except InvalidEntryError as iee:
